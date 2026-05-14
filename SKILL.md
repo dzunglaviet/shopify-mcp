@@ -2,58 +2,51 @@
 
 Manage your Shopify store directly from Claude / OpenClaw — orders, customers, products, and inventory — using natural language.
 
-Powered by [shopify-mcp](https://github.com/dzunglaviet/shopify-mcp), a Python MCP server connecting to the Shopify Admin REST API.
+Powered by [shopify-mcp](https://github.com/dzunglaviet/shopify-mcp), a Python MCP server connecting to the Shopify Admin REST API. Supports multiple stores, static access tokens, and OAuth client credentials.
 
-## What you can do
+## Tools
 
-**Orders**
-- List and filter orders by status, date, tag, payment, or fulfillment state
-- View full order details: line items, tracking, refunds
-- Add/remove tags, update internal notes
-- Cancel orders with reason and optional customer notification
-- Create fulfillments with tracking number and carrier
+**Orders** — `shopify_list_orders`, `shopify_get_order`, `shopify_update_order`, `shopify_cancel_order`, `shopify_fulfill_order`
 
-**Customers**
-- Search customers by email, phone, name, or tag
-- View customer details and order history
-- Add/remove tags, update internal notes
+**Customers** — `shopify_list_customers`, `shopify_get_customer`, `shopify_update_customer`
 
-**Products & Inventory**
-- List and search products by title, vendor, or status
-- View variant details, prices, and inventory quantities
-- Update inventory levels at any location
+**Products & Inventory** — `shopify_list_products`, `shopify_get_product`, `shopify_update_inventory`
 
 ## Setup
 
-### 1. Install the server
+### 1. Clone and install
 
 ```bash
 git clone https://github.com/dzunglaviet/shopify-mcp
 cd shopify-mcp
 python3 -m venv venv
 venv/bin/pip install -r requirements.txt
-cp .env.example .env
 ```
 
 ### 2. Create a Shopify Custom App
 
 1. Shopify Admin → Settings → Apps → **Develop apps** → Create an app
-2. Go to **Configuration → Admin API scopes** and enable:
-   - `read_orders`, `write_orders`
-   - `read_customers`, `write_customers`
-   - `read_products`
-   - `read_inventory`, `write_inventory`
-   - `read_fulfillments`, `write_fulfillments`
-3. Go to **API credentials → Install app** → copy the `shpat_...` token
+2. **Configuration → Admin API scopes** — enable:
+   `read_orders`, `write_orders`, `read_customers`, `write_customers`, `read_products`, `read_inventory`, `write_inventory`, `read_fulfillments`, `write_fulfillments`
+3. **API credentials → Install app** → copy the `shpat_...` token
 
 ### 3. Configure `.env`
 
 ```bash
-SHOPIFY_SHOP_DOMAIN=your-store.myshopify.com
-SHOPIFY_ACCESS_TOKEN=shpat_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+cp .env.example .env
 ```
 
-### 4. Add to OpenClaw / Claude Code
+Fill in your credentials:
+
+```bash
+SHOPIFY_SHOP_DOMAIN=your-store.myshopify.com
+SHOPIFY_ACCESS_TOKEN=shpat_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+SHOPIFY_API_VERSION=2026-04
+```
+
+### 4. Add to Claude Code / OpenClaw
+
+Add to `~/.claude/settings.json`:
 
 ```json
 {
@@ -67,29 +60,23 @@ SHOPIFY_ACCESS_TOKEN=shpat_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 }
 ```
 
+Restart Claude Code / OpenClaw after saving.
+
 ## Example prompts
 
 ```
 List the last 10 open orders
-Find customer with email john@example.com
-Show details for order #1042
-Add tag "priority" to order 6543210987654
-Fulfill order 6543210987654 with GHN tracking ABC123456789
-Set inventory for product "Blue T-Shirt size L" to 50 units
+Show me order #1042
+Find customer with email: john@example.com
+Cancel order 6543210987654 — customer changed their mind
+Fulfill order 6543210987654 with GHN tracking number ABC123456789
+Set inventory for inventory_item_id 11223344 to 50 units
 ```
 
 ## Multiple stores
-
-Set `SHOPIFY_STORES` in `.env` as a JSON array, then pass `shop` to any tool:
 
 ```bash
 SHOPIFY_STORES=[{"shop_domain":"store-a.myshopify.com","access_token":"shpat_aaa"},{"shop_domain":"store-b.myshopify.com","access_token":"shpat_bbb"}]
 ```
 
-```
-List orders from store-b
-```
-
-## Source
-
-GitHub: https://github.com/dzunglaviet/shopify-mcp
+Pass `shop` to any tool to target a specific store. Omitting `shop` defaults to the first configured store.
