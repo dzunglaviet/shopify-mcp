@@ -1,0 +1,17 @@
+# Environment
+.env
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# OAuth token cache
+storage/
+
+# macOS
+.DS_Store

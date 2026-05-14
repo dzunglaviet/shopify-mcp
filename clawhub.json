@@ -1,0 +1,37 @@
+{
+  "name": "shopify-mcp",
+  "display_name": "Shopify MCP",
+  "description": "Manage Shopify orders, customers, products, and inventory directly from Claude / OpenClaw via natural language.",
+  "version": "1.0.0",
+  "type": "mcp-server",
+  "runtime": "python",
+  "entry": "server.py",
+  "author": "iMat",
+  "license": "MIT",
+  "tags": ["shopify", "ecommerce", "orders", "inventory", "customers"],
+  "tools": [
+    "shopify_list_orders",
+    "shopify_get_order",
+    "shopify_update_order",
+    "shopify_cancel_order",
+    "shopify_fulfill_order",
+    "shopify_list_customers",
+    "shopify_get_customer",
+    "shopify_update_customer",
+    "shopify_list_products",
+    "shopify_get_product",
+    "shopify_update_inventory"
+  ],
+  "config": {
+    "mcpServers": {
+      "shopify-mcp": {
+        "command": "python",
+        "args": ["server.py"],
+        "env": {
+          "SHOPIFY_SHOP_DOMAIN": "<your-store>.myshopify.com",
+          "SHOPIFY_ACCESS_TOKEN": "<shpat_...>"
+        }
+      }
+    }
+  }
+}
